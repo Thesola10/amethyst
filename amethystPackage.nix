@@ -54,6 +54,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     amethyst
+    amber-lang
   ];
 
   configurePhase = ''
@@ -62,8 +63,6 @@ stdenv.mkDerivation {
   '';
 
   buildPhase = ''
-    mkdir -p /tmp/.local/share/amethyst/amber
-    ln -s ${amber-lang}/bin/amber /tmp/.local/share/amethyst/amber/amber.${amber-lang.version}.bin
     HOME=/tmp amethyst build
   '';
 
