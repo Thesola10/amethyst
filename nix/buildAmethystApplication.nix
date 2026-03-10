@@ -19,35 +19,7 @@
 , ... }:
 
 let
-  vendor = stdenv.mkDerivation {
-    inherit src;
-
-    name = "${name}-vendor";
-    outputHash = vendorHash;
-    outputHashAlgo = "sha256";
-    outputHashMode = "nar";
-
-    dontPatchShebangs = true;
-
-    phases = [ "unpackPhase" "buildPhase" "installPhase" ];
-
-    nativeBuildInputs = [
-      amethyst
-      amber-lang
-      pkgs.cacert
-    ];
-
-    buildPhase = ''
-      amethyst install
-      rm -rf amethyst_modules/*.git/hooks/
-      rm -rf amethyst_modules/*.git/worktrees/*
-    '';
-
-    installPhase = ''
-      mkdir -p $out
-      cp -r amethyst_modules vendor $out/
-    '';
-  };
+  vendor = import ./vendor.nix { inherit pkgs stdenv amethyst amber-lang name src vendorHash; };
 in
 stdenv.mkDerivation {
   inherit pname name version src;
@@ -60,6 +32,9 @@ stdenv.mkDerivation {
   configurePhase = ''
     ln -s ${vendor}/vendor vendor
     ln -s ${vendor}/amethyst_modules amethyst_modules
+
+    # oh my god this is so ugly don't look
+    export project_name=$(git config -f amethyst.ini --get project.name)
   '';
 
   buildPhase = ''
@@ -67,7 +42,7 @@ stdenv.mkDerivation {
   '';
 
   installPhase = ''
-    install -Dm755 target/${name}.sh $out/bin/${name}
+    install -Dm755 target/$project_name.sh $out/bin/$project_name
   '';
 
   passthru = { inherit vendor; };

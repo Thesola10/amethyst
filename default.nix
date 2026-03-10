@@ -22,4 +22,6 @@ stdenv.mkDerivation {
 
   propagatedBuildInputs = with pkgs;
     [ curl jq python3 git bc ];
+
+  passthru.buildAmethystApplication = pkgs.callPackage ./nix/buildAmethystApplication.nix;
 }
