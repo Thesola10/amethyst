@@ -26,5 +26,16 @@
         };
     in
     { packages.default = pkgs.callPackage ./default.nix { inherit amber-lang amethyst-bootstrap; };
-    });
+
+      packages.selfBootstrap = self.lib.buildAmethystPackage {
+        inherit pkgs amber-lang;
+        inherit (pkgs) stdenv lib;
+        src = ./.;
+        amethyst = self.outputs.packages.${system}.default;
+        name = "amethyst";
+        vendorHash = "sha256-/A6lintzCKLvNOs55Up091Tu5xJJWTVN/B5wSwgmOyc=";
+      };
+    }) // {
+      lib.buildAmethystPackage = import ./amethystPackage.nix;
+    };
 }

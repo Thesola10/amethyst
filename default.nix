@@ -21,5 +21,5 @@ stdenv.mkDerivation {
     ];
 
   propagatedBuildInputs = with pkgs;
-    [ curl jq python3 git ];
+    [ curl jq python3 git bc ];
 }
